@@ -1,0 +1,59 @@
+<html>
+<head>
+	<title>
+		memory visualization
+	</title>
+</head>
+<body>
+<div id="container" style="height: 400px; min-width: 310px"></div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>	
+<script src='/static/highstock.js'></script>
+<script src='/static/exporting.js'></script>
+<script>
+$(function(){
+	Highcharts.setOptions({
+		global:{useUTC:false}
+	});
+	$.getJSON('/data',function(data){
+		$('#container').highcharts("stockChart",{
+			chart:{
+				events:{
+					load: function(){
+						var series = this.series[0]
+		                setInterval(function(){
+		                $.getJSON('/data',function(res){
+		                    $.each(res,function(i,v){
+		                    	console.log(v);
+		                        series.addPoint(v)
+		                    })
+		                })
+		                },3000)
+					}
+				},
+
+			},
+
+			rangeSelector : {
+                selected : 1
+            },
+
+            title : {
+                text : '内存数据'
+            },
+
+            series : [{
+                name : '本机内存',
+                data : data,
+                tooltip: {
+                    valueDecimals: 2
+                }
+            }]		
+		});
+	
+	});
+
+});	
+</script>
+</body>
+</html>
